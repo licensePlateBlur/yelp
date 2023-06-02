@@ -15,6 +15,22 @@
       <a href="/user"><li >유저정보</li></a>
       </ul>
     </nav>
-    메인페이지 입니다.
+    <table>
+      <caption>유저 정보</caption>
+      <thead>
+          <tr>
+              <th>Name</th>
+              <th>Review count</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for document in data %} 
+              <tr>
+                  <td>{{ document.name }}</td>
+                  <td>{{ document.review_count}}</td>
+              </tr>
+          {% endfor %}
+      </tbody>
+  </table>
 </body>
 </html>
