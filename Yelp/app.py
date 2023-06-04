@@ -6,6 +6,7 @@ import plotly
 import plotly.express as px
 from urllib import parse
 import urllib.parse
+import os
 app = Flask(__name__)
 
 host = "localhost"
@@ -97,9 +98,38 @@ def date():
         pipelines.append({'$lookup':{'from':"yelp_business",'localField':"_id", 'foreignField':"business_id", 'as':"business"}})
         pipelines.append({'$unwind':"$business"})
         pipelines.append({'$sort':{'count': -1}})
-        pipelines.append({'$project': {'_id': 0, 'business_name' : "$business.name", 'count':1 ,'business_stars' : "$business.stars"
+        pipelines.append({'$project': {'_id': 0, 'business_id': "$business.business_id", 'business_name' : "$business.name", 'count':1 ,'business_stars' : "$business.stars"
                                        ,'business_city' : "$business.city",'business_address' : "$business.address"}})
         pipelines.append({'$limit':100})
         results = collection_review.aggregate(pipelines)
-        return render_template('business.html',data=results)
+
+        collection_photo = db_conn.get_collection("yelp_photo")
+        updated_results = []
+
+        for result in results:
+            business_id = result['business_id']
+            query_photo = {'business_id': business_id}
+            photo = collection_photo.find_one(query_photo)
+
+            if photo: 
+                result['photo_id'] = photo['photo_id']
+            
+            updated_results.append(result)
+        
+        for result in updated_results:
+            print(result)
+        print("리턴 예정")
+        return render_template('business.html',data=updated_results)
+    
     return "에러입니다."
+
+
+@app.route('/photos/<photo_id>.jpg')
+def serve_photo(photo_id):
+    photo_path = os.path.join("C:/Users/yjson/Downloads/yelpPhoto/photos", f"{photo_id}.jpg")
+    if os.path.isfile(photo_path):
+        directory = os.path.dirname(photo_path)
+        filename = os.path.basename(photo_path)
+        return send_from_directory(directory, filename)
+    else:
+        return "Photo not found"
