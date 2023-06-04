@@ -99,7 +99,7 @@ def date():
         pipelines.append({'$unwind':"$business"})
         pipelines.append({'$sort':{'count': -1}})
         pipelines.append({'$project': {'_id': 0, 'business_id': "$business.business_id", 'business_name' : "$business.name", 'count':1 ,'business_stars' : "$business.stars"
-                                       ,'business_city' : "$business.city",'business_address' : "$business.address"}})
+                                       ,'business_city' : "$business.city",'business_address' : "$business.address", 'real_average_stars': "$business.real_stars"}})
         pipelines.append({'$limit':100})
         results = collection_review.aggregate(pipelines)
 
