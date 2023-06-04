@@ -50,29 +50,23 @@ def search_business(name):
     collection_business = db_conn.get_collection("yelp_business")
     query = {'name': decoded_name}
 
-    # Search for the business in the "yelp_business" collection
     business = collection_business.find_one(query)
 
     if business:
-        # Get the business ID
         business_id = business['business_id']
 
-        # Search for the corresponding image in the "yelp_photo" collection
         collection_photo = db_conn.get_collection("yelp_photo")
         query_photo = {'business_id': business_id}
 
         photo = collection_photo.find_one(query_photo)
 
         if photo:
-            # Get the photo ID (image filename without extension)
             photo_id = photo['photo_id']
             print("photo_id below")
             print(photo_id)
 
-            # Render the template and pass the image filename
             return render_template('business.html', image_filename=url_for('display_image', filename=photo_id + '.jpg'))
 
-    # Business not found or image not found
     return 'Business not found or image not available.'
 
 
@@ -118,7 +112,6 @@ def date():
         
         for result in updated_results:
             print(result)
-        print("리턴 예정")
         return render_template('business.html',data=updated_results)
     
     return "에러입니다."
@@ -127,6 +120,7 @@ def date():
 @app.route('/photos/<photo_id>.jpg')
 def serve_photo(photo_id):
     photo_path = os.path.join("C:/Users/yjson/Downloads/yelpPhoto/photos", f"{photo_id}.jpg")
+    # 사진 경로를 각 컴퓨터의 로컬 환경에 맞게 변경해주세용
     if os.path.isfile(photo_path):
         directory = os.path.dirname(photo_path)
         filename = os.path.basename(photo_path)

@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <!--   <link rel="stylesheet" type="text/css" href="/static/css/style.css"> -->
     <title>Document</title>
-    <!-- Include Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
@@ -55,9 +54,7 @@
 
     <div id="graph"></div>
 
-    <!-- Script section for generating the graph -->
     <script>
-        // Extract the data for the graph from the HTML template variables
         var countData = [];
         var averageStarsData = [];
         var businessNames = [];
@@ -68,7 +65,6 @@
             businessNames.push("{{ document.business_name }}");
         {% endfor %}
 
-        // Create a new Plotly chart
         var data = [{
             x: countData,
             y: averageStarsData,
