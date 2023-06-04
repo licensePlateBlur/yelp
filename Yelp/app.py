@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, url_for, request
+from flask import Flask, render_template, send_from_directory, url_for, request,send_from_directory,make_response
 import pymongo
 import pandas as pd
 import json
@@ -15,6 +15,16 @@ pwd = "root"
 db = "yelp"
 client = pymongo.MongoClient("mongodb://{}:".format(user)+ parse.quote(pwd)+ "@{}:{}/{}".format(host,port,db))
 db_conn = client.get_database(db)
+
+# 영재 이거 추가하면됨
+@app.route('/static/css/<path:path>')
+def send_css(path):
+    response = make_response(send_from_directory('static/css', path))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 
 @app.route("/")
 def main():
