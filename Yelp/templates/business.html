@@ -4,15 +4,44 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Document</title>
 </head>
 <body>
     <nav class="header">
-        <a class='Logo'to="/">그루트</a>
+        <a class='Logo'to="/">Yelp</a>
         <ul>
         <a href="/business"><li>비지니스</li></a>
         <a href="/user"><li >유저정보</li></a>
         </ul>
       </nav>
+      <form method="POST" action="/date">
+        <label for="name">특정 날짜 이후 리뷰를 많이 받은 수</label>
+        <input type="text" id="date" name="date" required placeholder="2018-07-07 22:09:11">
+        <button type="submit">검색</button>
+    </form>
+    <table>
+        <caption>특정 날짜 이후 리뷰를 많이 받은 장소</caption>
+        <tbody>
+            {% for document in data %}
+            <tr>
+                <td rowspan="5">사진</td>
+                <td>{{ document.business_name }}</td>
+            </tr>
+            <tr>
+                <td>{{ document.business_stars }}</td>
+            </tr>
+            <tr>
+                <td>{{ document.count }}</td>
+            </tr>
+            <tr>
+                <td>{{ document.business_address }}</td>
+            </tr>
+            <tr>
+                <td>{{ document.business_city }}</td>
+            </tr> 
+        </tbody>
+        {% endfor %}
+    </table>
 </body>
 </html>
