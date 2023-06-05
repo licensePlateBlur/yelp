@@ -5,7 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <!--   <link rel="stylesheet" type="text/css" href="/static/css/style.css"> -->
     <title>Document</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
     <nav class="header">
@@ -23,12 +25,21 @@
         <input type="text" id="date" name="date" required placeholder="2018-07-07 22:09:11">
         <button type="submit">검색</button>
     </form>
+
+    <div id="graph"></div>
+
     <table>
         <caption>특정 날짜 이후 리뷰를 많이 받은 장소</caption>
         <tbody>
             {% for document in data %}
             <tr>
-                <td rowspan="5">사진</td>
+                <td rowspan="5">
+                    {% if document.photo_id %}
+                        <img src="{{ url_for('serve_photo', photo_id=document.photo_id) }}" alt="Business Photo">
+                    {% else %}
+                        <p>No photo available</p>
+                    {% endif %}
+                </td>
                 <td>{{ document.business_name }}</td>
             </tr>
             <tr>
@@ -43,8 +54,69 @@
             <tr>
                 <td>{{ document.business_city }}</td>
             </tr> 
+            {% endfor %}
         </tbody>
-        {% endfor %}
     </table>
+
+
+    
+<script>
+var dateButton = document.getElementById("date-submit");
+dateButton.addEventListener("click", convertDateTime, false);
+
+function convertDateTime() {
+  var datetimeLocalInput = document.getElementById("datetime-local-input");
+  var selectedDateTime = datetimeLocalInput.value;
+  var convertedDateTime = selectedDateTime.replace("T", " ").slice(0, -3);
+
+  var hiddenInput = document.getElementById("hidden-input");
+  hiddenInput.value = convertedDateTime;
+
+  var form = document.getElementById("date-form");
+  form.submit();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  
+});
+
+
+    var countData = [];
+    var averageStarsData = [];
+    var businessNames = [];
+
+    {% for document in data %}
+        countData.push({{ document.count }});
+        averageStarsData.push({{ document.real_average_stars }});
+        businessNames.push("{{ document.business_name }}");
+    {% endfor %}
+
+    var data = [{
+        x: countData,
+        y: averageStarsData,
+        mode: 'markers',
+        type: 'scatter',
+        text: businessNames,
+        hovertemplate: 'Business Name: %{text}<br>' +
+                       'Reviews Count: %{x}<br>' +
+                       'Average Stars: %{y}<br>',
+    }];
+
+    var layout = {
+        title: 'Relevance between review counts and average stars',
+        xaxis: {
+            title: 'Review Counts'
+        },
+        yaxis: {
+            title: 'Average Stars'
+        }
+    };
+
+    Plotly.newPlot('graph', data, layout);
+
+
+</script>
+
+
 </body>
 </html>
