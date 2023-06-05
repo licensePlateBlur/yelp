@@ -17,11 +17,15 @@
             <a href="/user"><li >유저정보</li></a>
         </ul>
     </nav>
-    <form method="POST" action="/date">
+    <form id = "date-form" method="POST" action="/date">
         <label for="name">특정 날짜 이후 리뷰를 많이 받은 수</label>
-        <input type="text" id="date" name="date" required placeholder="2018-07-07 22:09:11">
-        <button type="submit">검색</button>
+        <input type="datetime-local" id="datetime-local-input">
+        <input type="hidden" id="hidden-input" name="date">
+        <button type="button" id="date-submit">검색</button>
     </form>
+
+    <div id="graph"></div>
+
     <table>
         <caption>특정 날짜 이후 리뷰를 많이 받은 장소</caption>
         <tbody>
@@ -52,41 +56,65 @@
         </tbody>
     </table>
 
-    <div id="graph"></div>
 
-    <script>
-        var countData = [];
-        var averageStarsData = [];
-        var businessNames = [];
+    
+<script>
+var dateButton = document.getElementById("date-submit");
+dateButton.addEventListener("click", convertDateTime, false);
 
-        {% for document in data %}
-            countData.push({{ document.count }});
-            averageStarsData.push({{ document.real_average_stars }});
-            businessNames.push("{{ document.business_name }}");
-        {% endfor %}
+function convertDateTime() {
+  var datetimeLocalInput = document.getElementById("datetime-local-input");
+  var selectedDateTime = datetimeLocalInput.value;
+  var convertedDateTime = selectedDateTime.replace("T", " ").slice(0, -3);
 
-        var data = [{
-            x: countData,
-            y: averageStarsData,
-            mode: 'markers',
-            type: 'scatter',
-            text: businessNames,
-            hovertemplate: 'Business Name: %{text}<br>' +
-                           'Reviews Count: %{x}<br>' +
-                           'Average Stars: %{y}<br>',
-        }];
+  var hiddenInput = document.getElementById("hidden-input");
+  hiddenInput.value = convertedDateTime;
 
-        var layout = {
-            title: 'Relevance between review counts and average stars',
-            xaxis: {
-                title: 'Review Counts'
-            },
-            yaxis: {
-                title: 'Average Stars'
-            }
-        };
+  var form = document.getElementById("date-form");
+  form.submit();
+}
 
-        Plotly.newPlot('graph', data, layout);
-    </script>
+document.addEventListener("DOMContentLoaded", function() {
+  
+});
+
+
+    var countData = [];
+    var averageStarsData = [];
+    var businessNames = [];
+
+    {% for document in data %}
+        countData.push({{ document.count }});
+        averageStarsData.push({{ document.real_average_stars }});
+        businessNames.push("{{ document.business_name }}");
+    {% endfor %}
+
+    var data = [{
+        x: countData,
+        y: averageStarsData,
+        mode: 'markers',
+        type: 'scatter',
+        text: businessNames,
+        hovertemplate: 'Business Name: %{text}<br>' +
+                       'Reviews Count: %{x}<br>' +
+                       'Average Stars: %{y}<br>',
+    }];
+
+    var layout = {
+        title: 'Relevance between review counts and average stars',
+        xaxis: {
+            title: 'Review Counts'
+        },
+        yaxis: {
+            title: 'Average Stars'
+        }
+    };
+
+    Plotly.newPlot('graph', data, layout);
+
+
+</script>
+
+
 </body>
 </html>

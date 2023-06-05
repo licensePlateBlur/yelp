@@ -62,8 +62,8 @@ def search_business(name):
 
         if photo:
             photo_id = photo['photo_id']
-            print("photo_id below")
-            print(photo_id)
+            # print("photo_id below")
+            # print(photo_id)
 
             return render_template('business.html', image_filename=url_for('display_image', filename=photo_id + '.jpg'))
 
@@ -110,8 +110,8 @@ def date():
             
             updated_results.append(result)
         
-        for result in updated_results:
-            print(result)
+        # for result in updated_results:
+        #     print(result)
         return render_template('business.html',data=updated_results)
     
     return "에러입니다."
