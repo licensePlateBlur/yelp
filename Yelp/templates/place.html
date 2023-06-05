@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Document</title>
+</head>
+<body>
+    <nav class="header">
+        <a class='Logo' href="/">Yelp</a>
+        <ul>
+        <a href="/business"><li>비지니스</li></a>
+        <a href="/user"><li >유저정보</li></a>
+        <a href="/place"><li >굿/배드플레이스</li></a>
+        <a href="/category"><li >카테고리</li></a>
+        </ul>
+      </nav>
+      <div id="left">
+        <table id="hotplace">
+            <caption>평점을 낮게준 사람이 높게 평가한 장소(최고)</caption>
+            <tbody>
+                {% for document in good %}
+                <tr>
+                    <td rowspan="5">사진</td>
+                    <td>{{ document.business_name }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_stars }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.count }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_address }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_city }}</td>
+                </tr> 
+            </tbody>
+            {% endfor %}
+        </table>
+      </div>
+      <div id ="right">
+        <table id="hotplace">
+            <caption>평점을 높게 준사람이 낮게 평가한 장소(최악)</caption>
+            <tbody>
+                {% for document in bad %}
+                <tr>
+                    <td rowspan="5">사진</td>
+                    <td>{{ document.business_name }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_stars }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.count }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_address }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_city }}</td>
+                </tr> 
+            </tbody>
+            {% endfor %}
+        </table>
+      </div>
+</body>
+</html>

@@ -9,14 +9,17 @@
 </head>
 <body>
     <nav class="header">
-        <a class='Logo'to="/">Yelp</a>
+        <a class='Logo' href="/">Yelp</a>
         <ul>
         <a href="/business"><li>비지니스</li></a>
         <a href="/user"><li >유저정보</li></a>
+        <a href="/place"><li >굿/배드플레이스</li></a>
+        <a href="/category"><li >카테고리</li></a>
         </ul>
       </nav>
       <form method="POST" action="/date">
-        <label for="name">특정 날짜 이후 리뷰를 많이 받은 수</label>
+        <h1>특정 날짜 이후 리뷰를 많이 받은 장소</h1>
+        <label for="date">날짜를 형식에 맞게 입력해주세요</label>
         <input type="text" id="date" name="date" required placeholder="2018-07-07 22:09:11">
         <button type="submit">검색</button>
     </form>

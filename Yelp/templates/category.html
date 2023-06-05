@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <nav class="header">
+        <a class='Logo' href="/">Yelp</a>
+        <ul>
+        <a href="/business"><li>비지니스</li></a>
+        <a href="/user"><li >유저정보</li></a>
+        <a href="/place"><li >굿/배드플레이스</li></a>
+        <a href="/category"><li >카테고리</li></a>
+        </ul>
+      </nav>
+      <div id="section">
+      <div id ="category">
+        <h1>카테고리</h1>
+        {% for document in category %}
+      {% for category in document.categories %}
+      <div>{{ category }}</div>
+    {% endfor %}
+    {% endfor %}
+      </div>
+      <div id="middle">
+        <form method="POST" action="/cate">
+          <label for="cate">카테고리</label><input type="text" id="cate" name="cate" required placeholder="왼쪽 카테고리에서 선택">
+          <label for="cy">도시</label><input type="text" id="cy" name="cy" required placeholder="오른쪽 도시에서 선택">
+            <input type="radio" id="asc" name="option" value="asc"/>
+            <label for="asc">오름차순</label>
+
+            <input type="radio" id="desc" name="option" value="desc"/>
+            <label for="desc">내림차순</label>
+          <button type="submit" id="submit">검색</button>
+        </form>
+      </div>
+
+      <div id="city">
+        <h1>도시</h1>
+        {% for document in city %}
+        {% for city in document.city %}
+        <div>{{city}}</div>
+        {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+    <table>
+      <caption>카테고리/도시로 검색한 장소</caption>
+      <tbody>
+          {% for document in data %}
+          <tr>
+              <td rowspan="5">사진</td>
+              <td>{{ document.name }}</td>
+          </tr>
+          <tr>
+              <td>{{ document.stars }}</td>
+          </tr>
+          <tr>
+              <td>{{ document.review_count }}</td>
+          </tr>
+          <tr>
+              <td>{{ document.categories }}</td>
+          </tr>
+          <tr>
+              <td>{{ document.city }}</td>
+          </tr> 
+      </tbody>
+      {% endfor %}
+  </table>
+</body>
+</html>

@@ -87,3 +87,24 @@ caption{
   font-weight: bold;
   margin-bottom: 20px;
 }
+#hotplace{
+  width: 100%;
+}
+#category{
+  width: 30%;
+  height: 500px;
+  overflow: scroll;
+}
+#city{
+  width: 30%;
+  height: 500px;
+  overflow: scroll;
+}
+#middle{
+  width: 30%;
+}
+#section{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
