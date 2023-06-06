@@ -23,11 +23,17 @@
             <tbody>
                 {% for document in good %}
                 <tr>
-                    <td rowspan="5">사진</td>
+                    <td rowspan="6">
+                        {% if document.photo_id %}
+                        <img src="{{ url_for('serve_photo', photo_id=document.photo_id) }}" alt="Business Photo">
+                        {% else %}
+                        <p>No photo available</p>
+                        {% endif %}
+                    </td>
                     <td>{{ document.business_name }}</td>
                 </tr>
                 <tr>
-                    <td>{{ document.business_stars }}</td>
+                    <td>{{ document.real_average_stars }}</td>
                 </tr>
                 <tr>
                     <td>{{ document.count }}</td>
@@ -37,6 +43,9 @@
                 </tr>
                 <tr>
                     <td>{{ document.business_city }}</td>
+                </tr> 
+                <tr>
+                    <td>{{ document.text|join(' ')|truncate(200) }}</td>
                 </tr> 
             </tbody>
             {% endfor %}
@@ -48,11 +57,17 @@
             <tbody>
                 {% for document in bad %}
                 <tr>
-                    <td rowspan="5">사진</td>
+                    <td rowspan="6">
+                        {% if document.photo_id %}
+                        <img src="{{ url_for('serve_photo', photo_id=document.photo_id) }}" alt="Business Photo">
+                        {% else %}
+                        <p>No photo available</p>
+                        {% endif %}
+                    </td>
                     <td>{{ document.business_name }}</td>
                 </tr>
                 <tr>
-                    <td>{{ document.business_stars }}</td>
+                    <td>{{ document.real_average_stars }}</td>
                 </tr>
                 <tr>
                     <td>{{ document.count }}</td>
@@ -62,6 +77,9 @@
                 </tr>
                 <tr>
                     <td>{{ document.business_city }}</td>
+                </tr> 
+                <tr>
+                    <td>{{ document.text|join(' ')|truncate(200) }}</td>
                 </tr> 
             </tbody>
             {% endfor %}
