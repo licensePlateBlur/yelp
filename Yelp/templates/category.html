@@ -56,7 +56,13 @@
       <tbody>
           {% for document in data %}
           <tr>
-              <td rowspan="5">사진</td>
+              <td rowspan="5">
+                {% if document.photo_id %}
+                <img src="{{ url_for('serve_photo', photo_id=document.photo_id) }}" alt="Business Photo">
+                {% else %}
+                <p>No photo available</p>
+                {% endif %}
+              </td>
               <td>{{ document.name }}</td>
           </tr>
           <tr>
