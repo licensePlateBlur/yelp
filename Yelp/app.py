@@ -122,6 +122,7 @@ def place():
     #평점을 높게준 사람이 (평균 평점 4점 이상) 낮게 평가한(2점 이하) (좋은 장소 추출)
     collection_review = db_conn.get_collection("yelp_review")
     pipelines = list()
+    pipelines.append({'$match':{'date':{'$gte': "2018-07-07 22:09:11"}}})
     pipelines.append({'$lookup':{'from':"yelp_user",'localField':"user_id", 'foreignField':"user_id", 'as':"user"}})
     pipelines.append({'$lookup':{'from':"yelp_business",'localField':"business_id", 'foreignField':"business_id", 'as':"business"}})
     pipelines.append({'$lookup': {'from': "yelp_review", 'localField': "business_id", 'foreignField': "business_id", 'as': "reviews"}})
