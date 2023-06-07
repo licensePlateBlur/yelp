@@ -61,24 +61,24 @@
 
     
 <script>
-var dateButton = document.getElementById("date-submit");
-dateButton.addEventListener("click", convertDateTime, false);
+// var dateButton = document.getElementById("date-submit");
+// dateButton.addEventListener("click", convertDateTime, false);
 
-function convertDateTime() {
-  var datetimeLocalInput = document.getElementById("datetime-local-input");
-  var selectedDateTime = datetimeLocalInput.value;
-  var convertedDateTime = selectedDateTime.replace("T", " ").slice(0, -3);
+// function convertDateTime() {
+//   var datetimeLocalInput = document.getElementById("datetime-local-input");
+//   var selectedDateTime = datetimeLocalInput.value;
+//   var convertedDateTime = selectedDateTime.replace("T", " ").slice(0, -3);
 
-  var hiddenInput = document.getElementById("hidden-input");
-  hiddenInput.value = convertedDateTime;
+//   var hiddenInput = document.getElementById("hidden-input");
+//   hiddenInput.value = convertedDateTime;
 
-  var form = document.getElementById("date-form");
-  form.submit();
-}
+//   var form = document.getElementById("date-form");
+//   form.submit();
+// }
 
-document.addEventListener("DOMContentLoaded", function() {
+// document.addEventListener("DOMContentLoaded", function() {
   
-});
+// });
 
 
     var countData = [];

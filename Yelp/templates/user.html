@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
   <title>Document</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
     <nav class="header">
@@ -17,6 +18,8 @@
       <a href="/category"><li >카테고리</li></a>
       </ul>
     </nav>
+
+    <div id="graph"></div>
     <table>
       <caption>유저 정보</caption>
       <thead>
@@ -34,5 +37,47 @@
           {% endfor %}
       </tbody>
   </table>
+
+
+  <script>
+   
+        var countData = [];
+        var reviewingSince = [];
+        var userNames = [];
+
+        
+    
+        {% for document in data %}
+            console.log("input data")
+            countData.push({{ document.review_count }});
+            reviewingSince.push("{{ document.yelping_since }}");
+            userNames.push("{{ document.name }}");
+        {% endfor %}
+    
+        var data = [{
+            x: reviewingSince,
+            y: countData,
+            mode: 'markers',
+            type: 'scatter',
+            text: userNames,
+            hovertemplate: 'User Name: %{text}<br>' +
+                           'Reviewing Since: %{x}<br>' +
+                           'Review Counts: %{y}<br>',
+        }];
+    
+        var layout = {
+            title: 'Relevance between registered date and number of reviews',
+            xaxis: {
+                title: 'Registered Date'
+            },
+            yaxis: {
+                title: 'Number of Reviews'
+            }
+        };
+    
+        Plotly.newPlot('graph', data, layout);
+    
+    
+    </script>
 </body>
 </html>

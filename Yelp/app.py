@@ -77,9 +77,10 @@ def search_business(name):
 def user():
     collection_user = db_conn.get_collection("yelp_user")
     query = {}
-    results = collection_user.find(query).sort('review_count',-1).limit(10)
+    results = collection_user.find({}, {"_id": 0}).sort('review_count',-1).limit(100)
+    
 
-    return render_template('user.html',data=results)
+    return render_template('user.html',data=list(results))
 
 @app.route('/date', methods=['GET', 'POST'])
 def date():
@@ -92,9 +93,10 @@ def date():
         pipelines.append({'$group':{'_id':'$business_id', 'count':{'$sum':1}}})
         pipelines.append({'$lookup':{'from':"yelp_business",'localField':"_id", 'foreignField':"business_id", 'as':"business"}})
         pipelines.append({'$unwind':"$business"})
+        #pipelines.append({'$lookup': {'from': "yelp_photo", 'localField': "business_id", 'foreignField': "business_id", 'as': "photos"}})
         pipelines.append({'$sort':{'count': -1}})
         pipelines.append({'$project': {'_id': 0, 'business_id': "$business.business_id", 'business_name' : "$business.name", 'count':1 ,'business_stars' : "$business.stars"
-                                       ,'business_city' : "$business.city",'business_address' : "$business.address", 'real_average_stars': "$business.real_stars"}})
+                                       ,'business_city' : "$business.city",'business_address' : "$business.address", 'real_average_stars': "$business.real_stars", 'photo_id': {'$arrayElemAt': ['$photos.photo_id', 0]}}})
         pipelines.append({'$limit':100})
         results = collection_review.aggregate(pipelines)
 
@@ -111,8 +113,6 @@ def date():
             
             updated_results.append(result)
         
-        # for result in updated_results:
-        #     print(result)
         return render_template('business.html',data=updated_results)
     
     return "에러입니다."
@@ -125,26 +125,95 @@ def place():
     pipelines.append({'$match':{'date':{'$gte': "2018-07-07 22:09:11"}}})
     pipelines.append({'$lookup':{'from':"yelp_user",'localField':"user_id", 'foreignField':"user_id", 'as':"user"}})
     pipelines.append({'$lookup':{'from':"yelp_business",'localField':"business_id", 'foreignField':"business_id", 'as':"business"}})
+    pipelines.append({'$lookup': {'from': "yelp_review", 'localField': "business_id", 'foreignField': "business_id", 'as': "reviews"}})
+    #pipelines.append({'$lookup': {'from': "yelp_photo", 'localField': "business_id", 'foreignField': "business_id", 'as': "photos"}})
     pipelines.append({'$match':{"user.average_stars":{'$lte':2}, 'stars':{'$gt':4}}})
     pipelines.append({'$sort':{'stars': -1}})
-    pipelines.append({'$project': {'_id': 0,'business_id':1, 'business_name': {'$arrayElemAt': ['$business.name', 0]},'business_stars' : {'$arrayElemAt': ['$business.stars', 0]}
-                                   }})
-    pipelines.append({'$limit':20})
+    pipelines.append({'$project': {'_id': 0, 'business_id': "$business.business_id", 'business_name' : "$business.name", 'count':1 ,'business_stars' : {'$arrayElemAt': ['$business.stars', 0]}
+                                       ,'business_city' : "$business.city",'business_address' : "$business.address", 'real_average_stars': {'$arrayElemAt': ['$business.real_stars', 0]}, 'text': "$reviews.text", 'photo_id': {'$arrayElemAt': ['$photos.photo_id', 0]}}})
+    pipelines.append({'$limit':5})
     good = collection_review.aggregate(pipelines)
 
+
+    collection_photo = db_conn.get_collection("yelp_photo")
+    
+    updated_results_good = []
+
+    for result in good:
+        business_id = result['business_id'][0]
+        business_id = str(business_id)
+        print("good")
+        query_photo = {'business_id': business_id}
+        print(query_photo)
+        photo = collection_photo.find_one(query_photo)
+
+        if photo: 
+            result['photo_id'] = photo['photo_id']
+            
+            
+        updated_results_good.append(result)
+
     #평점을 낮게준 사람이 (평균 평점 2점 이하) 높게 평가한(4점 이상) (좋은 장소 추출)
-    # collection_review = db_conn.get_collection("yelp_review")
-    # pipelines = list()
-    # pipelines.append({'$lookup':{'from':"yelp_user",'localField':"user_id", 'foreignField':"user_id", 'as':"user"}})
-    # pipelines.append({'$lookup':{'from':"yelp_business",'localField':"business_id", 'foreignField':"business_id", 'as':"business"}})
-    # pipelines.append({'$match':{"user.average_stars":{'$gte':4}, 'stars':{'$lte':2}}})
-    # pipelines.append({'$sort':{'stars': -1}})
-    # pipelines.append({'$project': {'_id': 0,'business_id':1, 'business_name': {'$arrayElemAt': ['$business.name', 0]}, 'text':1}})
-    # pipelines.append({'$limit':20})
-    # bad = collection_review.aggregate(pipelines)
+    collection_review = db_conn.get_collection("yelp_review")
+    pipelines = list()
+    pipelines.append({'$lookup':{'from':"yelp_user",'localField':"user_id", 'foreignField':"user_id", 'as':"user"}})
+    pipelines.append({'$lookup':{'from':"yelp_business",'localField':"business_id", 'foreignField':"business_id", 'as':"business"}})
+    pipelines.append({'$lookup': {'from': "yelp_review", 'localField': "business_id", 'foreignField': "business_id", 'as': "reviews"}})
+    #pipelines.append({'$lookup': {'from': "yelp_photo", 'localField': "business_id", 'foreignField': "business_id", 'as': "photos"}})
+    pipelines.append({'$match':{"user.average_stars":{'$gte':4}, 'stars':{'$lte':2}}})
+    pipelines.append({'$sort':{'stars': 1}})
+    pipelines.append({'$project': {'_id': 0, 'business_id': "$business.business_id", 'business_name' : "$business.name", 'count':1 ,'business_stars' : {'$arrayElemAt': ['$business.stars', 0]}
+                                       ,'business_city' : "$business.city",'business_address' : "$business.address", 'real_average_stars': {'$arrayElemAt': ['$business.real_stars', 0]}, 'text': "$reviews.text", 'photo_id': {'$arrayElemAt': ['$photos.photo_id', 0]}}})
+    pipelines.append({'$limit':5})
+    bad = collection_review.aggregate(pipelines)
 
+    collection_photo = db_conn.get_collection("yelp_photo")
+    updated_results_bad = []
 
-    return render_template('place.html',good=good)
+    for result in bad:
+        business_id = result['business_id'][0]
+        business_id = str(business_id)
+        print("bad")
+        query_photo = {'business_id': business_id}
+        print(query_photo)
+        photo = collection_photo.find_one(query_photo)
+
+        if photo: 
+            result['photo_id'] = photo['photo_id']
+            
+        updated_results_bad.append(result)
+
+    # updated_good_results = []
+    # updated_bad_results = []
+
+    # collection_good_photo = db_conn.get_collection("yelp_photo")
+    
+
+    # for result in good:
+    #         business_id = result['business_id']
+    #         query_photo = {'business_id': business_id}
+    #         photo = collection_good_photo.find_one(query_photo)
+
+    #         if photo: 
+    #             print("good photo found")
+    #             result['photo_id'] = photo['photo_id']
+            
+    #         updated_good_results.append(result)
+
+    # collection_bad_photo = db_conn.get_collection("yelp_photo")
+
+    # for result in bad:
+    #         business_id = result['business_id']
+    #         query_photo = {'business_id': business_id}
+    #         photo = collection_bad_photo.find_one(query_photo)
+
+    #         if photo: 
+    #             print("bad photo found")
+    #             result['photo_id'] = photo['photo_id']
+            
+    #         updated_bad_results.append(result)
+
+    return render_template('place.html',good=updated_results_good, bad=updated_results_bad)
 
 @app.route('/category', methods=['GET', 'POST'])
 def showCate():
