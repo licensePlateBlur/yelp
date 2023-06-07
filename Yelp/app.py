@@ -130,7 +130,7 @@ def place():
     pipelines.append({'$sort':{'stars': -1}})
     pipelines.append({'$project': {'_id': 0, 'business_id': "$business.business_id", 'business_name' : "$business.name", 'count':1 ,'business_stars' : {'$arrayElemAt': ['$business.stars', 0]}
                                        ,'business_city' : "$business.city",'business_address' : "$business.address", 'real_average_stars': {'$arrayElemAt': ['$business.real_stars', 0]}, 'text': "$reviews.text", 'photo_id': {'$arrayElemAt': ['$photos.photo_id', 0]}}})
-    pipelines.append({'$limit':5})
+    pipelines.append({'$limit':200})
     good = collection_review.aggregate(pipelines)
 
 
@@ -163,7 +163,7 @@ def place():
     pipelines.append({'$sort':{'stars': 1}})
     pipelines.append({'$project': {'_id': 0, 'business_id': "$business.business_id", 'business_name' : "$business.name", 'count':1 ,'business_stars' : {'$arrayElemAt': ['$business.stars', 0]}
                                        ,'business_city' : "$business.city",'business_address' : "$business.address", 'real_average_stars': {'$arrayElemAt': ['$business.real_stars', 0]}, 'text': "$reviews.text", 'photo_id': {'$arrayElemAt': ['$photos.photo_id', 0]}}})
-    pipelines.append({'$limit':5})
+    pipelines.append({'$limit':200})
     bad = collection_review.aggregate(pipelines)
 
     collection_photo = db_conn.get_collection("yelp_photo")
@@ -247,7 +247,7 @@ def searchBusi1():
     collection_busi = db_conn.get_collection("yelp_business")
     pipelines = list()
     pipelines.append({'$group': {'_id': "null",'uniqueCities': {"$addToSet": "$city"}}})
-    pipelines.append({'$project':{'_id': 0, 'city': "$uniqueCities"}})
+    pipelines.append({'$project':{'_id': 0, 'city': "$uniqueCities", 'business_id': 1}})
     pipelines.append({'$limit':100})
     global_city= collection_busi.aggregate(pipelines)
     cate = request.form['cate']
@@ -264,11 +264,36 @@ def searchBusi1():
     if(option == 'asc'):
         results = collection_busi.find(query).sort('stars',1)
         print("오름")
-        return render_template('category.html',data=results,category=global_category, city=global_city) 
+
+        collection_photo = db_conn.get_collection("yelp_photo")
+        updated_results = []
+
+        for result in results:
+            business_id = result['business_id']
+            query_photo = {'business_id': business_id}
+            photo = collection_photo.find_one(query_photo)
+
+            if photo: 
+                result['photo_id'] = photo['photo_id']
+            
+            updated_results.append(result)
+
+        return render_template('category.html',data=updated_results,category=global_category, city=global_city) 
     elif(option == 'desc'):
         print("내림")
         results = collection_busi.find(query).sort('stars',-1)
-        return render_template('category.html',data=results,category=global_category, city=global_city) 
+
+        for result in results:
+            business_id = result['business_id']
+            query_photo = {'business_id': business_id}
+            photo = collection_photo.find_one(query_photo)
+
+            if photo: 
+                result['photo_id'] = photo['photo_id']
+            
+            updated_results.append(result)
+
+        return render_template('category.html',data=updated_results,category=global_category, city=global_city) 
     else:
         return "잘못입력하셨습니다."
 
