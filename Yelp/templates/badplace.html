@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Document</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <nav class="header">
+        <a class='Logo' href="/">Yelp</a>
+        <ul>
+        <a href="/business"><li>비지니스</li></a>
+        <a href="/user"><li >useful한 장소</li></a>
+        <a href="/goodplace"><li >굿플레이스</li></a>
+        <a href="/badplace"><li >배드플레이스</li></a>
+        <a href="/category"><li >카테고리</li></a>
+        </ul>
+      </nav>
+      <div id ="right">
+        <div id="graph_bad"></div>
+
+        <table id="hotplace">
+            <caption>평점을 높게 준사람이 낮게 평가한 장소(최악)</caption>
+            <tbody>
+                {% for document in bad %}
+                <tr>
+                    <td rowspan="6">
+                        {% if document.photo_id %}
+                        <img src="{{ url_for('serve_photo', photo_id=document.photo_id) }}" alt="Business Photo">
+                        {% else %}
+                        <p>No photo available</p>
+                        {% endif %}
+                    </td>
+                    <td>{{ document.business_name }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.real_average_stars }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_stars }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_address }}</td>
+                </tr>
+                <tr>
+                    <td>{{ document.business_city }}</td>
+                </tr> 
+                <tr>
+                    <td>{{ document.text|join(' ')|truncate(200) }}</td>
+                </tr> 
+            </tbody>
+            {% endfor %}
+        </table>
+      </div>
+
+      <script>
+        
+    var reviewerStar_bad = [];
+    var averageStarsData_bad = [];
+    var businessNames_bad = [];
+
+    {% for document in bad %}
+        reviewerStar_bad.push({{ document.business_stars }});
+        averageStarsData_bad.push({{ document.real_average_stars }});
+        businessNames_bad.push("{{ document.business_name }}");
+        console.log("bad")
+        console.log(document.business_name)
+    {% endfor %}
+
+    var data_bad = [{
+        x: reviewerStar_bad,
+        y: averageStarsData_bad,
+        mode: 'markers',
+        type: 'scatter',
+        text: businessNames_bad,
+        hovertemplate: 'Business Name: %{text}<br>' +
+                       'Reviewer Star: %{x}<br>' +
+                       'Average Stars: %{y}<br>',
+    }];
+
+    var layout_bad = {
+        title: '평점을 높게 준 사람이 낮게 평가한 장소의 평균 평점 상관성',
+        xaxis: {
+            title: 'Reviewer Star'
+        },
+        yaxis: {
+            title: 'Average Stars'
+        }
+    };
+
+    Plotly.newPlot('graph_bad', data_bad, layout_bad);
+      </script>
+</body>
+</html>

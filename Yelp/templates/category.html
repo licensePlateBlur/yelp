@@ -9,15 +9,16 @@
     <title>Document</title>
 </head>
 <body>
-    <nav class="header">
-        <a class='Logo' href="/">Yelp</a>
-        <ul>
-        <a href="/business"><li>비지니스</li></a>
-        <a href="/user"><li >유저정보</li></a>
-        <a href="/place"><li >굿/배드플레이스</li></a>
-        <a href="/category"><li >카테고리</li></a>
-        </ul>
-      </nav>
+  <nav class="header">
+    <a class='Logo' href="/">Yelp</a>
+    <ul>
+    <a href="/business"><li>비지니스</li></a>
+    <a href="/user"><li >useful한 장소</li></a>
+    <a href="/goodplace"><li >굿플레이스</li></a>
+    <a href="/badplace"><li >배드플레이스</li></a>
+    <a href="/category"><li >카테고리</li></a>
+    </ul>
+  </nav>
       <div id="section">
       <div id ="category">
         <h1>카테고리</h1>
@@ -30,8 +31,9 @@
       <div id="middle">
         <form method="POST" action="/cate">
           <label for="cate">카테고리</label><input type="text" id="cate" name="cate" required placeholder="왼쪽 카테고리에서 선택">
-          <label for="cy">도시</label><input type="text" id="cy" name="cy" required placeholder="오른쪽 도시에서 선택">
-            <input type="radio" id="asc" name="option" value="asc"/>
+          <br/><label for="cy">도시</label><input type="text" id="cy" name="cy" required placeholder="오른쪽 도시에서 선택">
+          <br/>  
+          <input type="radio" id="asc" name="option" value="asc"/>
             <label for="asc">오름차순</label>
 
             <input type="radio" id="desc" name="option" value="desc"/>

@@ -74,13 +74,24 @@ def search_business(name):
 
 
 @app.route("/user")
-def user():
-    collection_user = db_conn.get_collection("yelp_user")
-    query = {}
-    results = collection_user.find({}, {"_id": 0}).sort('review_count',-1).limit(100)
-    
+def search_useful_review():
 
-    return render_template('user.html',data=list(results))
+    collection_review = db_conn.get_collection("yelp_review")
+    query = {'useful':{'$gte':500}}
+
+    reviews = collection_review.find(query).sort('useful',-1)
+
+    update_result=[]
+    for review in reviews:
+        business_id = review['business_id']
+
+        collection_business = db_conn.get_collection("yelp_business")
+        query_business = {'business_id': business_id}
+
+        business = collection_business.find(query_business)
+        for i in business:
+            update_result.append(i)
+    return render_template('user.html',data=list(update_result))
 
 @app.route('/date', methods=['GET', 'POST'])
 def date():
@@ -117,8 +128,8 @@ def date():
     
     return "에러입니다."
 
-@app.route('/place', methods=['GET', 'POST'])
-def place():
+@app.route('/goodplace', methods=['GET', 'POST'])
+def goodplace():
     #평점을 높게준 사람이 (평균 평점 4점 이상) 낮게 평가한(2점 이하) (좋은 장소 추출)
     collection_review = db_conn.get_collection("yelp_review")
     pipelines = list()
@@ -153,6 +164,9 @@ def place():
             
         updated_results_good.append(result)
 
+    return render_template('goodplace.html',good=updated_results_good)
+@app.route('/badplace', methods=['GET', 'POST'])
+def badplace():
     #평점을 낮게준 사람이 (평균 평점 2점 이하) 높게 평가한(4점 이상) (좋은 장소 추출)
     collection_review = db_conn.get_collection("yelp_review")
     pipelines = list()
@@ -183,37 +197,7 @@ def place():
             
         updated_results_bad.append(result)
 
-    # updated_good_results = []
-    # updated_bad_results = []
-
-    # collection_good_photo = db_conn.get_collection("yelp_photo")
-    
-
-    # for result in good:
-    #         business_id = result['business_id']
-    #         query_photo = {'business_id': business_id}
-    #         photo = collection_good_photo.find_one(query_photo)
-
-    #         if photo: 
-    #             print("good photo found")
-    #             result['photo_id'] = photo['photo_id']
-            
-    #         updated_good_results.append(result)
-
-    # collection_bad_photo = db_conn.get_collection("yelp_photo")
-
-    # for result in bad:
-    #         business_id = result['business_id']
-    #         query_photo = {'business_id': business_id}
-    #         photo = collection_bad_photo.find_one(query_photo)
-
-    #         if photo: 
-    #             print("bad photo found")
-    #             result['photo_id'] = photo['photo_id']
-            
-    #         updated_bad_results.append(result)
-
-    return render_template('place.html',good=updated_results_good, bad=updated_results_bad)
+    return render_template('badplace.html',bad=updated_results_bad)
 
 @app.route('/category', methods=['GET', 'POST'])
 def showCate():
