@@ -22,11 +22,12 @@
 
     <div id="graph"></div>
     <table>
-      <caption>useful이 500이상 채택된 장소</caption>
+      <caption>useful이 200 이상 채택된 장소</caption>
       <thead>
           <tr>
               <th>Name</th>
               <th>Review count</th>
+              <th>Useful Count</th>
           </tr>
       </thead>
       <tbody>
@@ -34,6 +35,7 @@
               <tr>
                   <td>{{ document.name }}</td>
                   <td>{{ document.review_count}}</td>
+                  <td>{{ useful_counts[loop.index-1] }}</td>
               </tr>
           {% endfor %}
       </tbody>
@@ -42,7 +44,7 @@
 
   <script>
    
-        var countData = [];
+        var countUseful = [];
         var averageStars = [];
         var businessNames = [];
 
@@ -50,24 +52,27 @@
     
         {% for document in data %}
             console.log("input data")
-            countData.push({{ document.review_count }});
             averageStars.push({{ document.real_stars }});
             businessNames.push("{{ document.name }}");
         {% endfor %}
-    
+
+        {% for document in useful_counts %}
+            countUseful.push({{ document }});
+        {% endfor %}
+
         var data = [{
             x: averageStars,
-            y: countData,
+            y: countUseful,
             mode: 'markers',
             type: 'scatter',
             text: businessNames,
             hovertemplate: 'Business Name: %{text}<br>' +
                            'Average Star: %{x}<br>' +
-                           'Review Counts: %{y}<br>',
+                           'Useful Counts: %{y}<br>',
         }];
     
         var layout = {
-            title: 'Relevance between registered date and number of reviews',
+            title: 'Relevance between average star and number of useful',
             xaxis: {
                 title: 'Average Star'
             },

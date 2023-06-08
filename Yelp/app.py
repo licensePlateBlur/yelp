@@ -81,15 +81,18 @@ def search_useful_review():
 
     pipeline = [
         {'$match': query},
-        {'$group': {'_id': '$business_id'}},
-        {'$project': {'_id': 0, 'business_id': '$_id'}}
+        {'$group': {'_id': '$business_id', 'maxUseful': {'$max':'$useful'}}},
+        {'$project': {'_id': 0, 'business_id': '$_id', 'maxUseful': 1}}
     ]
 
     reviews = collection_review.aggregate(pipeline)
 
     update_result=[]
+    useful_counts=[]
+
     for review in reviews:
         business_id = review['business_id']
+        useful_count = review['maxUseful']
 
         collection_business = db_conn.get_collection("yelp_business")
         query_business = {'business_id': business_id}
@@ -100,10 +103,11 @@ def search_useful_review():
     
         for i in business:
             update_result.append(i)
+        useful_counts.append(useful_count)
 
     update_result.sort(key=lambda x: x['review_count'], reverse=True)       
     print(update_result)
-    return render_template('user.html',data=list(update_result))
+    return render_template('user.html',data=list(update_result), useful_counts=useful_counts)
 
 @app.route('/date', methods=['GET', 'POST'])
 def date():
