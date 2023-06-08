@@ -169,9 +169,7 @@ def goodplace():
     for result in good:
         business_id = result['business_id'][0]
         business_id = str(business_id)
-        print("good")
         query_photo = {'business_id': business_id}
-        print(query_photo)
         photo = collection_photo.find_one(query_photo)
 
         if photo: 
@@ -203,9 +201,7 @@ def badplace():
     for result in bad:
         business_id = result['business_id'][0]
         business_id = str(business_id)
-        print("bad")
         query_photo = {'business_id': business_id}
-        print(query_photo)
         photo = collection_photo.find_one(query_photo)
 
         if photo: 
@@ -283,6 +279,9 @@ def searchBusi1():
     elif(option == 'desc'):
         print("내림")
         results = collection_busi.find(query).sort('stars',-1)
+
+        collection_photo = db_conn.get_collection("yelp_photo")
+        updated_results = []
 
         for result in results:
             business_id = result['business_id']
