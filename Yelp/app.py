@@ -7,6 +7,7 @@ import plotly.express as px
 from urllib import parse
 import urllib.parse
 import os
+import time
 app = Flask(__name__)
 
 host = "localhost"
@@ -76,6 +77,7 @@ def search_business(name):
 @app.route("/user")
 def search_useful_review():
 
+    start_time = time.time()
     collection_review = db_conn.get_collection("yelp_review")
     query = {'useful':{'$gte':200}}
 
@@ -106,11 +108,14 @@ def search_useful_review():
         useful_counts.append(useful_count)
 
     update_result.sort(key=lambda x: x['review_count'], reverse=True)       
-    print(update_result)
+    end_time = time.time()
+    print("Execution Time")
+    print(end_time - start_time)
     return render_template('user.html',data=list(update_result), useful_counts=useful_counts)
 
 @app.route('/date', methods=['GET', 'POST'])
 def date():
+    start_time = time.time()
     if request.method == 'POST':
         date = request.form['date']  # 전송된 폼 데이터 받기
         collection_review = db_conn.get_collection("yelp_review")
@@ -142,10 +147,14 @@ def date():
         
         return render_template('business.html',data=updated_results)
     
+    end_time = time.time()
+    print("Execution Time")
+    print(end_time - start_time)
     return "에러입니다."
 
 @app.route('/goodplace', methods=['GET', 'POST'])
 def goodplace():
+    start_time = time.time()
     #평점을 높게준 사람이 (평균 평점 4점 이상) 낮게 평가한(2점 이하) (좋은 장소 추출)
     collection_review = db_conn.get_collection("yelp_review")
     pipelines = list()
@@ -178,9 +187,13 @@ def goodplace():
             
         updated_results_good.append(result)
 
+    end_time = time.time()
+    print("Execution Time")
+    print(end_time - start_time)
     return render_template('goodplace.html',good=updated_results_good)
 @app.route('/badplace', methods=['GET', 'POST'])
 def badplace():
+    start_time = time.time()
     #평점을 낮게준 사람이 (평균 평점 2점 이하) 높게 평가한(4점 이상) (좋은 장소 추출)
     collection_review = db_conn.get_collection("yelp_review")
     pipelines = list()
@@ -209,6 +222,9 @@ def badplace():
             
         updated_results_bad.append(result)
 
+    end_time = time.time()
+    print("Execution Time")
+    print(end_time - start_time)
     return render_template('badplace.html',bad=updated_results_bad)
 
 @app.route('/category', methods=['GET', 'POST'])
@@ -233,6 +249,7 @@ def showCate():
 
 @app.route('/cate', methods=['GET', 'POST'])
 def searchBusi1():
+    start_time = time.time()
     collection_busi = db_conn.get_collection("yelp_business")
     pipelines = list()
     pipelines.append({'$unwind':"$categories"})
@@ -275,6 +292,10 @@ def searchBusi1():
             
             updated_results.append(result)
 
+        end_time = time.time()
+        print("Execution Time")
+        print(end_time - start_time)
+
         return render_template('category.html',data=updated_results,category=global_category, city=global_city) 
     elif(option == 'desc'):
         print("내림")
@@ -292,6 +313,10 @@ def searchBusi1():
                 result['photo_id'] = photo['photo_id']
             
             updated_results.append(result)
+
+        end_time = time.time()
+        print("Execution Time")
+        print(end_time - start_time)
 
         return render_template('category.html',data=updated_results,category=global_category, city=global_city) 
     else:
